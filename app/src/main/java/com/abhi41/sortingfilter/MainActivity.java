@@ -1,21 +1,27 @@
 package com.abhi41.sortingfilter;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 
 import com.abhi41.sortingfilter.abstrct.Preferences;
 import com.abhi41.sortingfilter.adapters.ItemAdapter;
 import com.abhi41.sortingfilter.databinding.ActivityMainBinding;
 import com.abhi41.sortingfilter.model.Filter;
 import com.abhi41.sortingfilter.model.Item;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,12 +30,133 @@ public class MainActivity extends AppCompatActivity {
     private List<Item> items = new ArrayList<>();
     private ItemAdapter itemAdapter;
 
+    boolean isCheckedname = false;
+    boolean isCheckedSize = false;
+    boolean isCheckedPrice= false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+
+
+        loadFilterItem();
+
+
+        binding.btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, FilterActivity.class));
+            }
+        });
+
+        binding.btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this,
+                        R.style.BottomSheetDialogThme);
+                bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_sort_items);
+                bottomSheetDialog.onSaveInstanceState();
+
+
+                CheckBox chkname = bottomSheetDialog.findViewById(R.id.chkname);
+                CheckBox chkSize = bottomSheetDialog.findViewById(R.id.chkSize);
+                CheckBox chkprice = bottomSheetDialog.findViewById(R.id.chkprice);
+
+                if (isCheckedname)
+                {
+                    chkname.setChecked(true);
+                }else {
+                    chkname.setChecked(false);
+                }
+
+                if (isCheckedSize)
+                {
+                    chkSize.setChecked(true);
+                }else {
+                    chkSize.setChecked(false);
+                }
+
+                if (isCheckedPrice)
+                {
+                    chkprice.setChecked(true);
+                }else {
+                    chkprice.setChecked(false);
+                }
+
+                chkname.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onClick(View v) {
+                        if (isCheckedname) {
+                            isCheckedname = false;
+                        } else {
+                            isCheckedname = true;
+                        }
+
+                        if (isCheckedname) {
+                            items.sort(Item.nameComparator);
+                            itemAdapter.notifyDataSetChanged();
+                        } else {
+                            items.clear();
+                            loadFilterItem();
+                        }
+                    }
+                });
+
+                chkSize.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onClick(View v) {
+                        if (isCheckedSize) {
+                            isCheckedSize = false;
+                        } else {
+                            isCheckedSize = true;
+                        }
+
+                        if (isCheckedSize) {
+                            items.sort(Item.sizeComparator);
+                            itemAdapter.notifyDataSetChanged();
+                        } else {
+                            items.clear();
+                            loadFilterItem();
+                        }
+
+                    }
+                });
+
+                chkprice.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onClick(View v) {
+                        if (isCheckedPrice) {
+                            isCheckedPrice = false;
+                        } else {
+                            isCheckedPrice = true;
+                        }
+
+                        if (isCheckedPrice) {
+                            items.sort(Item.priceComparator);
+                            itemAdapter.notifyDataSetChanged();
+                        } else {
+                            items.clear();
+                            loadFilterItem();
+                        }
+
+                    }
+                });
+
+                bottomSheetDialog.show();
+            }
+        });
+
+
+    }
+
+    private void loadFilterItem() {
 
         items.add(new Item("Item 1", "Red", 10, 100.00));
         items.add(new Item("Item 2", "Red", 12, 100.00));
@@ -62,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
                     colorMatched = false;
                 } else if (sizes.size() > 0 && !sizes.contains(String.valueOf(item.getSize()))) {
                     sizeMatched = false;
-                } else if (prices.size() > 0 && !priceContains(prices,item.getPrize())) {
-                     priceMatched = false;
+                } else if (prices.size() > 0 && !priceContains(prices, item.getPrize())) {
+                    priceMatched = false;
                 }
 
                 if (colorMatched && sizeMatched && priceMatched) {
@@ -77,28 +204,20 @@ public class MainActivity extends AppCompatActivity {
         }
         itemAdapter = new ItemAdapter(getApplicationContext(), items);
         binding.recyclerMain.setAdapter(itemAdapter);
-
-
-        binding.btnFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, FilterActivity.class));
-            }
-        });
-
-
+        itemAdapter.notifyDataSetChanged();
     }
-    private boolean priceContains(List<String> prices, Double prize){
+
+    private boolean priceContains(List<String> prices, Double prize) {
         boolean flag = false;
 
-        for (String s:prices){
+        for (String s : prices) {
             String[] tempPrices = s.split("-");
 
-            if (prize>=Double.valueOf(tempPrices[0]) && prize<=Double.valueOf(tempPrices[1])){
+            if (prize >= Double.valueOf(tempPrices[0]) && prize <= Double.valueOf(tempPrices[1])) {
 
-                Log.d(TAG, "priceContains: "+Double.valueOf(tempPrices[0]));
-                Log.d(TAG, "priceContains2: "+Double.valueOf(tempPrices[1]));
-                Log.d(TAG, "prize: "+prize);
+                Log.d(TAG, "priceContains: " + Double.valueOf(tempPrices[0]));
+                Log.d(TAG, "priceContains2: " + Double.valueOf(tempPrices[1]));
+                Log.d(TAG, "prize: " + prize);
                 flag = true;
                 break;
             }

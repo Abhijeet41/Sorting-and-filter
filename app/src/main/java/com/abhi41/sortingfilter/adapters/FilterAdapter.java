@@ -20,7 +20,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
     private HashMap<Integer, Filter> filters;
     private RecyclerView filterValueRv;
 
-    private int selectedPostion =0;
+    private int selectedPostion = 0;
 
     public FilterAdapter(Context context, HashMap<Integer, Filter> filters, RecyclerView filterValueRv) {
         this.context = context;
