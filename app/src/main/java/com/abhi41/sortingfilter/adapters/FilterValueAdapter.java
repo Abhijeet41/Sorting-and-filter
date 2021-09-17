@@ -68,8 +68,11 @@ public class FilterValueAdapter extends RecyclerView.Adapter<FilterValueAdapter.
 
     @Override
     public int getItemCount() {
+
         return Preferences.filters.get(filterIndex).getValues().size();
     }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -81,5 +84,7 @@ public class FilterValueAdapter extends RecyclerView.Adapter<FilterValueAdapter.
             container = itemView;
             value = itemView.findViewById(R.id.value);
         }
+
+
     }
 }

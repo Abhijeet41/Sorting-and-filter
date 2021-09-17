@@ -53,6 +53,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
         holder.title.setText(filters.get(position).getName());
     }
 
+
     @Override
     public int getItemCount() {
         return filters.size();

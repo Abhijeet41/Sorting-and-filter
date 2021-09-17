@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isCheckedname = false;
     boolean isCheckedSize = false;
-    boolean isCheckedPrice= false;
+    boolean isCheckedPrice = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-
-
-        loadFilterItem();
-
 
         binding.btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,24 +61,21 @@ public class MainActivity extends AppCompatActivity {
                 CheckBox chkSize = bottomSheetDialog.findViewById(R.id.chkSize);
                 CheckBox chkprice = bottomSheetDialog.findViewById(R.id.chkprice);
 
-                if (isCheckedname)
-                {
+                if (isCheckedname) {
                     chkname.setChecked(true);
-                }else {
+                } else {
                     chkname.setChecked(false);
                 }
 
-                if (isCheckedSize)
-                {
+                if (isCheckedSize) {
                     chkSize.setChecked(true);
-                }else {
+                } else {
                     chkSize.setChecked(false);
                 }
 
-                if (isCheckedPrice)
-                {
+                if (isCheckedPrice) {
                     chkprice.setChecked(true);
-                }else {
+                } else {
                     chkprice.setChecked(false);
                 }
 
@@ -156,8 +148,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadFilterItem();
+    }
+
     private void loadFilterItem() {
 
+        items.clear();
         items.add(new Item("Item 1", "Red", 10, 100.00));
         items.add(new Item("Item 2", "Red", 12, 100.00));
         items.add(new Item("Item 3", "Red", 14, 100.00));
@@ -173,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         items.add(new Item("Item 13", "Blue", 10, 300.00));
         items.add(new Item("Item 14", "Blue", 12, 150.00));
         items.add(new Item("Item 15", "White", 10, 170.00));
+
 
         if (!Preferences.filters.isEmpty()) {
             ArrayList<Item> filteredItems = new ArrayList<Item>();
@@ -194,14 +194,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (colorMatched && sizeMatched && priceMatched) {
+
                     filteredItems.add(item);
                 }
 
             }
             items.clear();
             items.addAll(filteredItems);
-
+            filteredItems.clear();
         }
+
+
         itemAdapter = new ItemAdapter(getApplicationContext(), items);
         binding.recyclerMain.setAdapter(itemAdapter);
         itemAdapter.notifyDataSetChanged();
@@ -230,10 +233,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-
+        items.clear();
+        Preferences.filters.clear();
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 }

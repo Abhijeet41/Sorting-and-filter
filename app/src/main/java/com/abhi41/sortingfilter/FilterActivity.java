@@ -63,12 +63,25 @@ public class FilterActivity extends AppCompatActivity {
                 startActivity(new Intent(FilterActivity.this, MainActivity.class));
             }
         });
+        binding.btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Preferences.filters.clear();
+                //recreate();
+                finish();
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+
+            }
+        });
 
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Preferences.filters.clear();
         finish();
+
     }
 }
